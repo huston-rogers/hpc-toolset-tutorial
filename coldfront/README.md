@@ -328,7 +328,7 @@ For more options on allowing permissions for various types of staff access, see 
 
 
 ### Activate the allocation request  
-
+- Log in using local account username: `hpcadmin` password: `ilovelinux`  
 - Navigate to the `Admin` menu and click on `Allocation Requests`  
 Note: the project review status is a green check mark, indicating our Center Director has already approved the submitted project review.  
 
