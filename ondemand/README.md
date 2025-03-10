@@ -616,7 +616,7 @@ So you can see, we have `PATH` issues.
 
 ```shell
 TIMING - Starting jupyter at: Fri Jul 17 18:06:34 UTC 2020
-+ jupyter notebook --config=/home/hpcadmin/ondemand/data/sys/dashboard/batch_connect/dev/jupyter/output/e16b9a77-1a4f-4c9e-95f3-d3c23e5e8d76/config.py
++ jupyter lab --config=/home/hpcadmin/ondemand/data/sys/dashboard/batch_connect/dev/jupyter/output/e16b9a77-1a4f-4c9e-95f3-d3c23e5e8d76/config.py
 /home/hpcadmin/ondemand/data/sys/dashboard/batch_connect/dev/jupyter/output/e16b9a77-1a4f-4c9e-95f3-d3c23e5e8d76/script.sh: line 27: jupyter: command not found
 Timed out waiting for Jupyter Notebook server to open port 16970!
 ```
@@ -631,7 +631,7 @@ why it's not directly in the shell scripts `PATH`.
 We need to add this line to our job's shell script to enable it.
 
 ```shell
-source /usr/local/jupyter/2.1.4/bin/activate
+source /usr/local/jupyter/4.3.5/bin/activate
 ```
 
 So let's [open the template/script.sh.erb in the file editor](https://localhost:3443/pun/sys/file-editor/edit/home/hpcadmin/ondemand/dev/jupyter/template/script.sh.erb)
@@ -643,11 +643,11 @@ Lines 24 - 31 of `template/script.sh.erb` should now look like this.
 # Benchmark info
 echo "TIMING - Starting jupyter at: $(date)"
 
-source /usr/local/jupyter/2.1.4/bin/activate
+source /usr/local/jupyter/4.3.5/bin/activate
 
 # Launch the Jupyter Notebook Server
 set -x
-jupyter notebook --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
+jupyter lab --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
 ```
 
 #### Correctly launch
@@ -952,96 +952,12 @@ form:
   - memory
 ```
 
-#### Adding a jupyterlab checkbox
+#### What's the difference between Jupyter LAB and NOTEBOOK
 
-Jupyter ships with both Notebooks and JupyterLab. Some users may want to
-use JuypterLab instead of Notebooks, so let's give them that option.
-
-First, let's add the checkbox to the form.
-
-```yaml
-# form.yml, with only this addition for brevity
-attributes:
-  jupyterlab_switch:
-    widget: "check_box"
-    label: "Use JupyterLab instead of Jupyter Notebook?"
-    help: |
-      JupyterLab is the next generation of Jupyter, and is completely compatible with existing Jupyter Notebooks.
-form:
-  - jupyterlab_switch
-```
-
-Refresh the [new session form](https://localhost:3443/pun/sys/dashboard/batch_connect/dev/jupyter/session_contexts/new)
-and you should now see your updates.
-
-For this change, there's no need to edit the `submit.yml.erb`.  This toggle happens in the
-actual script that's ran during the job, so we have to edit `template.sh.erb`.  Note that
-this is also an ERB script, so it gets templated in Ruby before being submitted to the
-scheduler.
-
-Line 31 is as follows:
-
-```shell
-jupyter notebook --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
-```
-
-Replace the `notebook` parameter with this new toggle.
-
-```shell
-jupyter <%= context.jupyterlab_switch == "1" ? "lab" : "notebook" %> --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
-```
-
-If you're unfamiliar with Ruby ternary statements, you can read it them like
-this: `if true ? do this : else do that`. So this reads, `if context.jupyterlab_switch is 1 use lab, else use notebook`.
-
-Also note the use of `context` here where we didn't have to use that in the `submit.yml.erb`.
-This is an important difference.  To reference variables from the form in the `template/*.sh.erb` files
-you **must** reference them through the `context` object.
-
-Now you can submit the job with the checked box to use JupyterLab instead of Notebook and you can see
-the Jupyter UI is significantly different.
-
-At this point, this should be the entirety of the `form.yml` (without comments).
-They're given here in full if you want to copy/paste them. And remember to [save your spot](#save-your-spot)!
-
-```yaml
-# form.yml
-cluster: "hpc"
-attributes:
-  modules: "python"
-  extra_jupyter_args: ""
-  custom_queue:
-    widget: "select"
-    label: "Partition"
-    options:
-      - ["Compute", "compute"]
-      - ["Debug", "debug"]
-  bc_num_slots:
-    max: 2
-  memory:
-    widget: "number_field"
-    max: 1000
-    min: 200
-    step: 200
-    value: 600
-    label: "Memory (MB)"
-    help: "RSS Memory"
-  jupyterlab_switch:
-    widget: "check_box"
-    label: "Use JupyterLab instead of Jupyter Notebook?"
-    help: |
-      JupyterLab is the next generation of Jupyter, and is completely compatible with existing Jupyter Notebooks.
-form:
-  - modules
-  - extra_jupyter_args
-  - bc_account
-  - custom_queue
-  - bc_num_hours
-  - bc_num_slots
-  - bc_email_on_started
-  - memory
-  - jupyterlab_switch
-```
+In the past, Jupyter Notebook was shipped as a simpler way to interactive with python scripts
+in short formats, particularly for visualization. The funcationlity was extended in Lab, but 
+Lab was a separate piece of the puzzle. Now, lab is the default, and the functionality of 
+notebook is present in lab, but the expectation is all users will utilize lab.
 
 ### Promoting to production
 
@@ -1081,13 +997,13 @@ module list
 # ...
 
 # and remove the last parameter given to jupyter on line 31
-jupyter <%= context.jupyterlab_switch == "1" ? "lab" : "notebook" %> --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
+jupyter lab --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
 ```
 
 Now it should look like this:
 
 ```shell
-jupyter <%= context.jupyterlab_switch == "1" ? "lab" : "notebook" %> --config="${CONFIG_FILE}"
+jupyter lab --config="${CONFIG_FILE}"
 ```
 
 At this point, this should be the entirety of the `template/script.sh.erb` and `form.yml` (without comments).
@@ -1113,7 +1029,7 @@ source /usr/local/jupyter/2.1.4/bin/activate
 
 # Launch the Jupyter Notebook Server
 set -x
-jupyter <%= context.jupyterlab_switch == "1" ? "lab" : "notebook" %> --config="${CONFIG_FILE}"
+jupyter lab --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
 ```
 
 ```yaml
@@ -1136,17 +1052,11 @@ attributes:
     value: 600
     label: "Memory (MB)"
     help: "RSS Memory"
-  jupyterlab_switch:
-    widget: "check_box"
-    label: "Use JupyterLab instead of Jupyter Notebook?"
-    help: |
-      JupyterLab is the next generation of Jupyter, and is completely compatible with existing Jupyter Notebooks.
 form:
   - custom_queue
   - bc_num_hours
   - bc_num_slots
   - memory
-  - jupyterlab_switch
 ```
 
 #### Edit the manifest
@@ -1171,7 +1081,7 @@ subcategory: Machine Learning
 role: batch_connect
 # change the description, this shows up when you hover over the menu item
 description: |
-  This app will launch a Jupyter Lab or Notebook on one or more nodes.
+  This app will launch a Jupyter Lab on one or more nodes.
 ```
 
 If you want to change `category` and `subcategory` you can freely do so.
