@@ -31,7 +31,7 @@ scheduler, and as such there's plenty of information we can retrieve using slurm
 
 
 ```shell
-/opt/slurm/bin/sacctmgr show association where user=$USER format=Account --parsable2 --noheader"
+/usr/bin/sacctmgr show association where user=$USER format=Account --parsable2 --noheader"
 ```
 
 With a command that retrieves information, we can utilize ruby and the dashboard loading mechanism
@@ -179,4 +179,25 @@ We should also update the submit.yml.erb, just to make sure our submissions are 
 
     - "-partition"
     - "<%= custom_partition %>" 
+```
+
+## Dev Dashboard Too?
+
+Yes, the initializers can be put in the dev dashboard instead of the sitewide config.
+
+```shell
+# /home/hpcadmin/ondemand/dev/dashboard/config/initializers/init.rb
+
+require 'open3'
+
+class CustomAccounts
+  def self.accounts
+    @account ||= begin
+
+...
+```
+I'd recommend copying the sitewide to the dev dashboard before getting too crazy.
+
+```shell
+cp  /etc/ood/config/apps/dashboard/initializers/init.rb  /home/hpcadmin/ondemand/dev/dashboard/config/initializers/init.rb
 ```
