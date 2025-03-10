@@ -100,7 +100,7 @@ Rails.application.config.after_initialize do
 
     # Hash of base paths to check for additional directories with titles
     # location => Title
-    base_paths = ['/work/orion','/scratch/orion','/work/noaa','/work2/noaa']
+    base_paths = ['/work/','/scratch/']
 
     base_paths.each do |base_path|
       # Check if the base path exists and is a directory, to avoid error
