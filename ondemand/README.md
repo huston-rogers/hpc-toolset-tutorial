@@ -254,7 +254,7 @@ Navigate back to Open OnDemand's `My interactive sessions` page and press the
 `Connect to Jupyter` button. This will open a new tab to the Jupyter application
 that's running on a compute node in your Slurm cluster!
 
-Connect to the Jupyter session and navigate to the `jupyter_notebook_data` directory.
+Connect to the Jupyter session and navigate to the `jupyter_lab_data` directory.
 Open the `GUI-demo.ipynb` and this should open a new tab to this notebook. Run all
 the cells in this notebook for a demonstration that this Jupyter does in fact work.
 
@@ -589,7 +589,7 @@ the "Save" button at the top left.
 #### Launch the Jupyter Application
 
 Now when we navigate back to our [interactive sessions](https://localhost:3443/pun/sys/dashboard/batch_connect/sessions),
-you'll see the "Interactive Apps \[Sandbox\]" menu with an item labeled "Jupyter Notebook".
+you'll see the "Interactive Apps \[Sandbox\]" menu with an item labeled "Jupyter Lab".
 
 [Follow this link](https://localhost:3443/pun/sys/dashboard/batch_connect/dev/jupyter/session_contexts/new) and we'll be
 presented with this form for specifying different attributes about the job we want to submit to the SLURM scheduler.
@@ -618,7 +618,7 @@ So you can see, we have `PATH` issues.
 TIMING - Starting jupyter at: Fri Jul 17 18:06:34 UTC 2020
 + jupyter lab --config=/home/hpcadmin/ondemand/data/sys/dashboard/batch_connect/dev/jupyter/output/e16b9a77-1a4f-4c9e-95f3-d3c23e5e8d76/config.py
 /home/hpcadmin/ondemand/data/sys/dashboard/batch_connect/dev/jupyter/output/e16b9a77-1a4f-4c9e-95f3-d3c23e5e8d76/script.sh: line 27: jupyter: command not found
-Timed out waiting for Jupyter Notebook server to open port 16970!
+Timed out waiting for Jupyter server to open port 16970!
 ```
 
 #### Configure jupyter PATH
@@ -645,7 +645,7 @@ echo "TIMING - Starting jupyter at: $(date)"
 
 source /usr/local/jupyter/4.3.5/bin/activate
 
-# Launch the Jupyter Notebook Server
+# Launch the Jupyter Server
 set -x
 jupyter lab --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
 ```
@@ -659,7 +659,7 @@ and OnDemand will redirect us to Jupyter.
 
 ![fix path and launch](imgs/fix_path_and_launch.gif)
 
-Congratulations! We've now started development on the Jupyter Notebook batch connect application and
+Congratulations! We've now started development on the Jupyter Lab batch connect application and
 successfully connected to it.
 
 You may want to delete this job now by using the "Delete" button on the panels as we'll be iterating through
@@ -1019,17 +1019,17 @@ echo "TIMING - Starting main script at: $(date)"
 cd "${HOME}"
 
 #
-# Start Jupyter Notebook Server
+# Start Jupyter Server
 #
 
 # Benchmark info
 echo "TIMING - Starting jupyter at: $(date)"
 
-source /usr/local/jupyter/2.1.4/bin/activate
+source /usr/local/jupyter/4.3.5/bin/activate
 
-# Launch the Jupyter Notebook Server
+# Launch the Jupyter Server
 set -x
-jupyter lab --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
+jupyter lab --config="${CONFIG_FILE}" 
 ```
 
 ```yaml
@@ -1538,7 +1538,7 @@ Notes
 2. Templates
 3. Create New Job (with python template)
 4. Edit Files
-5. Click `jupyter_notebook_data` in tree.
+5. Click `jupyter_lab_data` in tree.
 6. Select `plot_rbm_logistic_classification.py` and click Copy
 7. Go "back" in browser and click Paste
 8. Select script.sh click edit
