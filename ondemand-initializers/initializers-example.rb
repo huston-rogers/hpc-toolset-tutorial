@@ -3,7 +3,7 @@ require 'open3'
 class CustomPartitions
   def self.partitions
     @partitions ||= begin
-      sinfo_cmd = "/opt/slurm/bin/sinfo"
+      sinfo_cmd = "/usr/bin/sinfo"
       args = ["--noheader","--exact","--all","-o %R"]
       @partitions_avail = []
       o, e, s = Open3.capture3(sinfo_cmd , *args)
@@ -20,7 +20,7 @@ CustomPartitions.partitions
 class CustomAccounts
   def self.accounts
     @account ||= begin
-      sinfo_cmd = "/opt/slurm/bin/sacctmgr show association where user=$USER format=Account --parsable2 --noheader"
+      sinfo_cmd = "/usr/bin/sacctmgr show association where user=$USER format=Account --parsable2 --noheader"
       @accounts_avail = []
       o, e, s = Open3.capture3(sinfo_cmd)
       o.each_line do |v|
@@ -37,7 +37,7 @@ CustomAccounts.accounts
 class CustomQOS
   def self.qos
     @qos ||=begin
-      sinfo_cmd = "/opt/slurm/bin/sacctmgr show QOS format=Name,MaxWall --noheader"
+      sinfo_cmd = "/usr/bin/sacctmgr show QOS format=Name,MaxWall --noheader"
       @qos_avail = []
       o, e, s = Open3.capture3(sinfo_cmd)
       o.each_line do |v|
@@ -62,7 +62,7 @@ class DynamicOptions
     @@accounts = []
     @@qos_avail = []
     @options ||=begin
-      sinfo_cmd = "/opt/slurm/bin/sacctmgr show User $USER --associations format=account,qos --parsable2 --noheader"
+      sinfo_cmd = "/usr/bin/sacctmgr show User $USER --associations format=account,qos --parsable2 --noheader"
       @qos_all = []
       o, e, s = Open3.capture3(sinfo_cmd)
       o.each_line do |v|
